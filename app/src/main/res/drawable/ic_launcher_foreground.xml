@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    AnimatedVectorDrawable for Liquid Clock app icon.
+    Converted 1-to-1 from animated_glass_clock.html.
+
+    Animations:
+      secondHandGroup  →  full 360° in 60 000 ms  (1 rpm)
+      minuteHandGroup  →  full 360° in 3 600 000 ms
+      hourHandGroup    →  full 360° in 43 200 000 ms
+
+    All three use linear interpolation and repeat infinitely,
+    exactly matching the HTML requestAnimationFrame() tick logic.
+-->
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+
+    <!-- Reference the static vector we built above -->
+    <aapt:attr name="android:drawable">
+
+        <vector
+            android:width="108dp"
+            android:height="108dp"
+            android:viewportWidth="1024"
+            android:viewportHeight="1024">
+
+            <!-- Black rounded-square background -->
+            <path
+                android:pathData="M230,0 L794,0 Q1024,0 1024,230 L1024,794 Q1024,1024 794,1024 L230,1024 Q0,1024 0,794 L0,230 Q0,0 230,0 Z"
+                android:fillColor="#000000"/>
+
+            <!-- Dark grey clock face -->
+            <path
+                android:pathData="M512,512 m-420,0 a420,420 0 1,0 840,0 a420,420 0 1,0 -840,0"
+                android:fillColor="#1a1a1a"
+                android:strokeColor="#26FFFFFF"
+                android:strokeWidth="2"/>
+
+            <!-- Glass bezel ring -->
+            <path
+                android:pathData="M512,512 m-418,0 a418,418 0 1,0 836,0 a418,418 0 1,0 -836,0"
+                android:fillColor="#00000000"
+                android:strokeColor="#14FFFFFF"
+                android:strokeWidth="40"/>
+
+            <!-- Major tick 12 -->
+            <path android:pathData="M510.5,132 L513.5,132 L513.5,162 L510.5,162 Z" android:fillColor="#CCFFFFFF"/>
+            <!-- Minor 30 -->
+            <group android:pivotX="512" android:pivotY="512" android:rotation="30">
+                <path android:pathData="M511,134 L513,134 L513,152 L511,152 Z" android:fillColor="#80FFFFFF"/>
+            </group>
+            <!-- Minor 60 -->
+            <group android:pivotX="512" android:pivotY="512" android:rotation="60">
+                <path android:pathData="M511,134 L513,134 L513,152 L511,152 Z" android:fillColor="#80FFFFFF"/>
+            </group>
+            <!-- Major tick 3 -->
+            <group android:pivotX="512" android:pivotY="512" android:rotation="90">
+                <path android:pathData="M510.5,132 L513.5,132 L513.5,162 L510.5,162 Z" android:fillColor="#CCFFFFFF"/>
+            </group>
+            <!-- Minor 120 -->
+            <group android:pivotX="512" android:pivotY="512" android:rotation="120">
+                <path android:pathData="M511,134 L513,134 L513,152 L511,152 Z" android:fillColor="#80FFFFFF"/>
+            </group>
+            <!-- Minor 150 -->
+            <group android:pivotX="512" android:pivotY="512" android:rotation="150">
+                <path android:pathData="M511,134 L513,134 L513,152 L511,152 Z" android:fillColor="#80FFFFFF"/>
+            </group>
+            <!-- Major tick 6 -->
+            <group android:pivotX="512" android:pivotY="512" android:rotation="180">
+                <path android:pathData="M510.5,132 L513.5,132 L513.5,162 L510.5,162 Z" android:fillColor="#CCFFFFFF"/>
+            </group>
+            <!-- Minor 210 -->
+            <group android:pivotX="512" android:pivotY="512" android:rotation="210">
+                <path android:pathData="M511,134 L513,134 L513,152 L511,152 Z" android:fillColor="#80FFFFFF"/>
+            </group>
+            <!-- Minor 240 -->
+            <group android:pivotX="512" android:pivotY="512" android:rotation="240">
+                <path android:pathData="M511,134 L513,134 L513,152 L511,152 Z" android:fillColor="#80FFFFFF"/>
+            </group>
+            <!-- Major tick 9 -->
+            <group android:pivotX="512" android:pivotY="512" android:rotation="270">
+                <path android:pathData="M510.5,132 L513.5,132 L513.5,162 L510.5,162 Z" android:fillColor="#CCFFFFFF"/>
+            </group>
+            <!-- Minor 300 -->
+            <group android:pivotX="512" android:pivotY="512" android:rotation="300">
+                <path android:pathData="M511,134 L513,134 L513,152 L511,152 Z" android:fillColor="#80FFFFFF"/>
+            </group>
+            <!-- Minor 330 -->
+            <group android:pivotX="512" android:pivotY="512" android:rotation="330">
+                <path android:pathData="M511,134 L513,134 L513,152 L511,152 Z" android:fillColor="#80FFFFFF"/>
+            </group>
+
+            <!-- HOUR HAND — named group for animation, starting at 300° (10 o'clock) -->
+            <group
+                android:name="hourHandGroup"
+                android:pivotX="512"
+                android:pivotY="512"
+                android:rotation="300">
+                <path
+                    android:pathData="M508,352 Q508,348 512,348 Q516,348 516,352 L516,512 Q516,516 512,516 Q508,516 508,512 Z"
+                    android:fillColor="#F2FFFFFF"/>
+            </group>
+
+            <!-- MINUTE HAND — starting at 60° (2 o'clock) -->
+            <group
+                android:name="minuteHandGroup"
+                android:pivotX="512"
+                android:pivotY="512"
+                android:rotation="60">
+                <path
+                    android:pathData="M509.5,292 Q509.5,289 512,289 Q514.5,289 514.5,292 L514.5,512 Q514.5,515 512,515 Q509.5,515 509.5,512 Z"
+                    android:fillColor="#E6FFFFFF"/>
+            </group>
+
+            <!-- SECOND HAND — starting at 180° (pointing to 6) -->
+            <group
+                android:name="secondHandGroup"
+                android:pivotX="512"
+                android:pivotY="512"
+                android:rotation="180">
+                <path
+                    android:pathData="M511,252 L513,252 L513,512 L511,512 Z"
+                    android:fillColor="#F5A623"/>
+                <path
+                    android:pathData="M511,512 L513,512 L513,572 L511,572 Z"
+                    android:fillColor="#F5A623"/>
+                <path
+                    android:pathData="M512,572 m-6,0 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0"
+                    android:fillColor="#F5A623"/>
+            </group>
+
+            <!-- Centre dots (drawn on top of everything) -->
+            <path
+                android:pathData="M512,512 m-14,0 a14,14 0 1,0 28,0 a14,14 0 1,0 -28,0"
+                android:fillColor="#F5A623"/>
+            <path
+                android:pathData="M512,650 m-8,0 a8,8 0 1,0 16,0 a8,8 0 1,0 -16,0"
+                android:fillColor="#E53935"/>
+            <path
+                android:pathData="M512,512 m-6,0 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0"
+                android:fillColor="#FFFFFF"/>
+
+            <!-- Glass reflection -->
+            <path
+                android:pathData="M312,320 a200,80 0 1,0 400,0 a200,80 0 1,0 -400,0"
+                android:fillColor="#0FFFFFFF"/>
+
+            <!-- Top highlight arc -->
+            <path
+                android:pathData="M121.5,369.6 A415,415 0 0 1 902,369.6"
+                android:fillColor="#00000000"
+                android:strokeColor="#4DFFFFFF"
+                android:strokeWidth="3"
+                android:strokeLineCap="round"/>
+
+        </vector>
+    </aapt:attr>
+
+    <!-- ── SECOND HAND: 360° in 60 000ms, linear, infinite ── -->
+    <target android:name="secondHandGroup">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="rotation"
+                android:valueFrom="180"
+                android:valueTo="540"
+                android:duration="60000"
+                android:repeatCount="-1"
+                android:repeatMode="restart"
+                android:interpolator="@android:interpolator/linear"/>
+        </aapt:attr>
+    </target>
+
+    <!-- ── MINUTE HAND: 360° in 3 600 000ms, linear, infinite ── -->
+    <target android:name="minuteHandGroup">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="rotation"
+                android:valueFrom="60"
+                android:valueTo="420"
+                android:duration="3600000"
+                android:repeatCount="-1"
+                android:repeatMode="restart"
+                android:interpolator="@android:interpolator/linear"/>
+        </aapt:attr>
+    </target>
+
+    <!-- ── HOUR HAND: 360° in 43 200 000ms, linear, infinite ── -->
+    <target android:name="hourHandGroup">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="rotation"
+                android:valueFrom="300"
+                android:valueTo="660"
+                android:duration="43200000"
+                android:repeatCount="-1"
+                android:repeatMode="restart"
+                android:interpolator="@android:interpolator/linear"/>
+        </aapt:attr>
+    </target>
+
+</animated-vector>

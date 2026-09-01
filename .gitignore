@@ -1,0 +1,18 @@
+# Build outputs
+build/
+app/build/
+
+# Local properties (contains SDK path, sensitive)
+local.properties
+
+# Gradle wrapper jar (binary)
+gradle/wrapper/gradle-wrapper.jar
+
+# IDE files
+.idea/
+*.iml
+.DS_Store
+
+# Crash logs
+hs_err_pid*.log
+replay_pid*.log

@@ -1,0 +1,6 @@
+{
+  "name": "Liquid Clock",
+  "description": "A beautiful and highly functional Liquid Glass Clock, Alarm, Stopwatch, and Timer app with visual glassmorphism and stunning ambient layout details.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

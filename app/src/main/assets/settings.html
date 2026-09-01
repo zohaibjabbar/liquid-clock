@@ -1,0 +1,756 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+<title>Clock Settings - Liquid Glass</title>
+<!-- Removed Tailwind CDN and Material Symbols Font link to satisfy Step 5 -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed": "#ffdad5",
+                    "inverse-on-surface": "#303032",
+                    "surface-container-low": "#1b1b1d",
+                    "on-secondary-container": "#ffc3bb",
+                    "error": "#ffb4ab",
+                    "surface-container-highest": "#353437",
+                    "primary-fixed": "#6cff82",
+                    "primary": "#55ee71",
+                    "background": "#000000",
+                    "inverse-surface": "#e4e2e4",
+                    "inverse-primary": "#006e26",
+                    "primary-container": "#30d158",
+                    "on-secondary-fixed": "#410001",
+                    "surface-variant": "#353437",
+                    "on-secondary": "#690004",
+                    "tertiary-container": "#ffa11a",
+                    "surface-container-high": "#2a2a2c",
+                    "surface-container": "#1f1f21",
+                    "surface-tint": "#47e266",
+                    "surface-container-lowest": "#0e0e10",
+                    "on-background": "#e4e2e4",
+                    "on-tertiary-fixed-variant": "#673d00",
+                    "secondary-container": "#b6040e",
+                    "on-tertiary": "#482900",
+                    "tertiary-fixed-dim": "#ffb868",
+                    "on-tertiary-fixed": "#2b1700",
+                    "error-container": "#93000a",
+                    "tertiary": "#ffc78c",
+                    "primary-fixed-dim": "#47e266",
+                    "on-surface-variant": "#bccbb7",
+                    "outline": "#869583",
+                    "on-primary-fixed-variant": "#00531a",
+                    "on-primary-container": "#00541b",
+                    "surface-dim": "#131315",
+                    "secondary": "#ffb4aa",
+                    "on-error": "#690005",
+                    "outline-variant": "#3d4a3b",
+                    "surface": "#131315",
+                    "on-primary": "#003910",
+                    "on-surface": "#e4e2e4",
+                    "secondary-fixed-dim": "#ffb4aa",
+                    "on-tertiary-container": "#683e00",
+                    "on-error-container": "#ffdad6",
+                    "on-secondary-fixed-variant": "#930007",
+                    "surface-bright": "#39393b",
+                    "on-primary-fixed": "#002106",
+                    "tertiary-fixed": "#ffddbb"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-sm": "0.5rem",
+                    "container-margin": "1rem",
+                    "section-gap": "3rem",
+                    "gutter": "1rem",
+                    "stack-lg": "2rem",
+                    "stack-md": "1rem"
+            },
+            "fontFamily": {
+                    "display-timer-mobile": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "button-text": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "label-caps": ["Inter"],
+                    "display-timer": ["Inter"]
+            },
+            "fontSize": {
+                    "display-timer-mobile": ["72px", {"lineHeight": "80px", "letterSpacing": "-2px", "fontWeight": "300"}],
+                    "body-lg": ["17px", {"lineHeight": "22px", "fontWeight": "400"}],
+                    "headline-md": ["20px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "button-text": ["17px", {"lineHeight": "22px", "fontWeight": "500"}],
+                    "body-sm": ["15px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "display-timer": ["88px", {"lineHeight": "100px", "letterSpacing": "-2px", "fontWeight": "300"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        :root {
+            --bg-true-black: #000000;
+            --accent-cyan: rgba(0, 255, 255, 0.15);
+            --accent-violet: rgba(138, 43, 226, 0.15);
+            --amber-accent: #ffa11a;
+            --text-primary: #e4e2e4;
+            --text-muted: #8e8e93;
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --iridescent-gradient: linear-gradient(135deg, rgba(0,255,255,0.4) 0%, rgba(138,43,226,0.4) 50%, rgba(255,161,26,0.4) 100%);
+            --glass-blur: 20px;
+            --glass-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15);
+            --glass-border-padding: 1.4px;
+            --glass-border-gradient: linear-gradient(
+                180deg,
+                rgba(255, 255, 255, 0.45) 0%,
+                rgba(255, 255, 255, 0.15) 20%,
+                transparent 40%,
+                transparent 60%,
+                rgba(255, 255, 255, 0.15) 80%,
+                rgba(255, 255, 255, 0.45) 100%
+            );
+        }
+
+        body {
+            background-color: var(--bg-true-black);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .glow-cyan {
+            position: fixed;
+            top: -10%;
+            left: -10%;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(circle, var(--accent-cyan) 0%, transparent 70%);
+            filter: blur(80px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .glow-violet {
+            position: fixed;
+            bottom: -10%;
+            right: -10%;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(circle, var(--accent-violet) 0%, transparent 70%);
+            filter: blur(80px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .glass-card {
+            position: relative;
+            overflow: hidden;
+            background: var(--glass-bg);
+            background-blend-mode: luminosity;
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border-radius: 1.25rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .glass-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            padding: var(--glass-border-padding);
+            background: var(--glass-border-gradient);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            border-radius: inherit;
+        }
+
+        .glass-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 56px;
+            padding: 0.75rem 1.25rem;
+            border-bottom: 0.5px solid var(--glass-border);
+            transition: background 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .settings-label {
+            flex: 0 0 60%;
+            max-width: 60%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
+            text-align: left;
+        }
+
+        .settings-value {
+            flex: 0 0 40%;
+            max-width: 40%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            text-align: right;
+        }
+
+        .settings-label span,
+        .settings-value span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            min-width: 0;
+        }
+
+        .settings-label .material-symbols-outlined,
+        .settings-value .material-symbols-outlined {
+            flex-shrink: 0;
+        }
+
+        .glass-item:last-child {
+            border-bottom: none;
+        }
+
+        .glass-item:active {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Custom Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        input:checked + .slider {
+            background-color: var(--amber-accent);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        /* Custom Range Slider */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 2px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            background: var(--amber-accent);
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -7px;
+            box-shadow: 0 0 10px rgba(255, 161, 26, 0.3);
+        }
+
+        .material-symbols-outlined {
+            font-size: 20px;
+            user-select: none;
+        }
+        
+        :root {
+            --status-bar-height: 0px;
+        }
+        
+        header {
+            padding-top: var(--status-bar-height) !important;
+            height: calc(56px + var(--status-bar-height)) !important;
+        }
+        
+        main {
+            padding-top: calc(80px + var(--status-bar-height)) !important;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen pb-20 bg-background bg-black">
+<!-- Atmospheric Background -->
+<div class="glow-cyan" style="background: radial-gradient(80% 60% at 85% 10%, rgba(120, 200, 255, 0.15) 0%, transparent 70%);"></div>
+<div class="glow-violet" style="background: radial-gradient(60% 50% at 20% 85%, rgba(200, 120, 255, 0.1) 0%, transparent 60%);"></div>
+<!-- Top App Bar -->
+<header class="fixed top-0 w-full z-50 bg-background/60 backdrop-blur-xl px-4 h-14 flex items-center justify-between border-b border-white/5">
+<div class="flex items-center gap-4">
+<button id="back-button" class="w-10 h-10 flex items-center justify-center active:scale-90 transition-transform text-primary" onclick="if(window.AndroidBridge) window.AndroidBridge.goBack();">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md-mobile text-on-surface">Settings</h1>
+</div>
+</header>
+<!-- Main Content -->
+<main class="relative z-10 pt-20 px-4 max-w-2xl mx-auto">
+<!-- Section: Alarms -->
+<section class="mb-8">
+<h2 class="font-label-caps text-label-caps mb-3 tracking-[0.2em] px-2 uppercase text-white/60">ALARMS</h2>
+<div class="glass-card">
+<div class="glass-item cursor-pointer" onclick="if(window.AndroidBridge) window.AndroidBridge.pickAlarmSound();">
+<span class="font-body-lg text-body-lg text-on-surface settings-label">Default Alarm Sound</span>
+<div class="settings-value">
+<span id="alarm-sound-name" class="font-body-sm text-body-sm text-muted">Starlight</span>
+<span class="material-symbols-outlined text-muted">chevron_right</span>
+</div>
+</div>
+<div class="glass-item flex-col items-stretch gap-3">
+<div class="flex justify-between items-center w-full">
+<span class="font-body-lg text-body-lg text-on-surface settings-label">Alarm Volume</span>
+<div class="settings-value">
+<span class="material-symbols-outlined text-tertiary">volume_up</span>
+</div>
+</div>
+<div class="relative w-full h-8 flex items-center group">
+  <div class="absolute w-full h-4 bg-[#1e1b4b] rounded-full overflow-hidden">
+    <div id="alarm-volume-bar" class="h-full bg-[#a78bfa]" style="width: 70%"></div>
+  </div>
+  <div class="absolute w-full h-4 flex justify-between px-2 items-center pointer-events-none">
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+  </div>
+  <input id="alarm-volume-slider" type="range" min="0" max="100" value="70" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" oninput="updateAlarmVolume(this.value, true)">
+  <div id="alarm-volume-thumb" class="absolute w-6 h-6 bg-[#f59e0b] rounded-full border-2 border-white shadow-[0_0_10px_rgba(245,158,11,0.5)] pointer-events-none" style="left: calc(70% - 12px)"></div>
+</div>
+</div>
+<div class="glass-item cursor-pointer" onclick="if(window.AndroidBridge) window.AndroidBridge.pickSnoozeDuration();">
+<span class="font-body-lg text-body-lg text-on-surface settings-label">Snooze Duration</span>
+<div class="settings-value">
+<span id="snooze-duration-text" class="font-body-sm text-body-sm text-muted">9 Minutes</span>
+<span class="material-symbols-outlined text-muted">chevron_right</span>
+</div>
+</div>
+<div class="glass-item">
+<span class="font-body-lg text-body-lg text-on-surface settings-label">Gradually Increase Volume</span>
+<div class="settings-value">
+<label class="toggle-switch">
+<input id="gradual-volume-toggle" type="checkbox" onchange="if(window.AndroidBridge) window.AndroidBridge.setGraduallyIncreaseVolume(this.checked);">
+<span class="slider"></span>
+</label>
+</div>
+</div>
+<div class="glass-item">
+<span class="font-body-lg text-body-lg text-on-surface settings-label">Vibrate</span>
+<div class="settings-value">
+<label class="toggle-switch">
+<input id="vibrate-alarms-toggle" type="checkbox" onchange="if(window.AndroidBridge) window.AndroidBridge.setVibrateAlarms(this.checked);">
+<span class="slider"></span>
+</label>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Timer -->
+<section class="mb-8">
+<h2 class="font-label-caps text-label-caps mb-3 tracking-[0.2em] px-2 uppercase text-white/60">TIMER</h2>
+<div class="glass-card">
+<div class="glass-item cursor-pointer" onclick="if(window.AndroidBridge) window.AndroidBridge.pickTimerSound();">
+<span class="font-body-lg text-body-lg text-on-surface settings-label">Default Timer Sound</span>
+<div class="settings-value">
+<span id="timer-sound-name" class="font-body-sm text-body-sm text-muted">Crystal</span>
+<span class="material-symbols-outlined text-muted">chevron_right</span>
+</div>
+</div>
+<div class="glass-item flex-col items-stretch gap-3">
+<div class="flex justify-between items-center w-full">
+<span class="font-body-lg text-body-lg text-on-surface settings-label">Timer Volume</span>
+<div class="settings-value">
+<span class="material-symbols-outlined text-tertiary">volume_up</span>
+</div>
+</div>
+<div class="relative w-full h-8 flex items-center group">
+  <div class="absolute w-full h-4 bg-[#1e1b4b] rounded-full overflow-hidden">
+    <div id="timer-volume-bar" class="h-full bg-[#a78bfa]" style="width: 85%"></div>
+  </div>
+  <div class="absolute w-full h-4 flex justify-between px-2 items-center pointer-events-none">
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+  </div>
+  <input id="timer-volume-slider" type="range" min="0" max="100" value="85" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" oninput="updateTimerVolume(this.value, true)">
+  <div id="timer-volume-thumb" class="absolute w-6 h-6 bg-[#f59e0b] rounded-full border-2 border-white shadow-[0_0_10px_rgba(245,158,11,0.5)] pointer-events-none" style="left: calc(85% - 12px)"></div>
+</div>
+</div>
+<div class="glass-item">
+<span class="font-body-lg text-body-lg text-on-surface settings-label">Keep Screen On During Timer</span>
+<div class="settings-value">
+<label class="toggle-switch">
+<input id="keep-screen-on-toggle" type="checkbox" onchange="if(window.AndroidBridge) window.AndroidBridge.setKeepScreenOn(this.checked);">
+<span class="slider"></span>
+</label>
+</div>
+</div>
+<div class="glass-item">
+<span class="font-body-lg text-body-lg text-on-surface settings-label">Vibrate When Timer Ends</span>
+<div class="settings-value">
+<label class="toggle-switch">
+<input id="vibrate-timer-toggle" type="checkbox" onchange="if(window.AndroidBridge) window.AndroidBridge.setVibrateTimer(this.checked);">
+<span class="slider"></span>
+</label>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Haptics -->
+<section class="mb-8">
+<h2 class="font-label-caps text-label-caps mb-3 tracking-[0.2em] px-2 uppercase text-white/60">HAPTICS</h2>
+<div class="glass-card">
+<div class="glass-item flex-col items-stretch gap-3">
+<div class="flex justify-between items-center w-full">
+<span class="font-body-lg text-body-lg text-on-surface settings-label">Vibration Intensity</span>
+<div class="settings-value">
+<span id="vibration-intensity-text" class="font-body-sm text-body-sm text-muted">High</span>
+<span class="material-symbols-outlined text-tertiary">vibration</span>
+</div>
+</div>
+<div class="relative w-full h-8 flex items-center group">
+  <div class="absolute w-full h-4 bg-[#1e1b4b] rounded-full overflow-hidden">
+    <div id="vibration-intensity-bar" class="h-full bg-[#a78bfa]" style="width: 70%"></div>
+  </div>
+  <div class="absolute w-full h-4 flex justify-between px-2 items-center pointer-events-none">
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+    <div class="w-1 h-1 bg-white/60 rounded-full"></div>
+  </div>
+  <input id="vibration-intensity-slider" type="range" min="0" max="100" value="70" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" oninput="updateVibrationIntensity(this.value, true)">
+  <div id="vibration-intensity-thumb" class="absolute w-6 h-6 bg-[#f59e0b] rounded-full border-2 border-white shadow-[0_0_10px_rgba(245,158,11,0.5)] pointer-events-none" style="left: calc(70% - 12px)"></div>
+</div>
+<div class="flex justify-between w-full text-xs text-white/40 px-1">
+<span>Low</span>
+<span>High</span>
+</div>
+</div>
+<div class="glass-item">
+<span class="font-body-lg text-body-lg text-on-surface settings-label">Haptic Feedback</span>
+<div class="settings-value">
+<label class="toggle-switch">
+<input id="haptic-feedback-toggle" type="checkbox" onchange="if(window.AndroidBridge) window.AndroidBridge.setHapticFeedbackEnabled(this.checked);">
+<span class="slider"></span>
+</label>
+</div>
+</div>
+<div class="glass-item">
+<span class="font-body-lg text-body-lg text-on-surface settings-label">Timer Haptics</span>
+<div class="settings-value">
+<label class="toggle-switch">
+<input id="timer-haptics-toggle" type="checkbox" onchange="if(window.AndroidBridge) window.AndroidBridge.setTimerHapticsEnabled(this.checked);">
+<span class="slider"></span>
+</label>
+</div>
+</div>
+<div class="glass-item">
+<span class="font-body-lg text-body-lg text-on-surface settings-label">Alarm Haptics</span>
+<div class="settings-value">
+<label class="toggle-switch">
+<input id="alarm-haptics-toggle" type="checkbox" onchange="if(window.AndroidBridge) window.AndroidBridge.setAlarmHapticsEnabled(this.checked);">
+<span class="slider"></span>
+</label>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: About -->
+<section class="mb-12">
+<h2 class="font-label-caps text-label-caps mb-3 tracking-[0.2em] px-2 uppercase text-white/60">ABOUT</h2>
+<div class="glass-card">
+<div class="glass-item">
+<span class="font-body-lg text-body-lg text-on-surface settings-label">Version</span>
+<div class="settings-value">
+<span id="app-version-text" class="font-body-sm text-body-sm text-muted">4.2.1-stable</span>
+</div>
+</div>
+<div class="glass-item cursor-pointer" onclick="if(window.AndroidBridge) window.AndroidBridge.rateApp();">
+<span class="font-body-lg text-body-lg text-on-surface settings-label">Rate the App</span>
+<div class="settings-value">
+<span class="material-symbols-outlined text-muted">chevron_right</span>
+</div>
+</div>
+<div class="glass-item cursor-pointer" onclick="if(window.AndroidBridge) window.AndroidBridge.openPrivacyPolicy();">
+<span class="font-body-lg text-body-lg text-on-surface settings-label">Privacy Policy</span>
+<div class="settings-value">
+<span class="material-symbols-outlined text-muted">chevron_right</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+
+
+<script>
+        // Simple haptic-like feedback for toggles and sliders
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', () => {
+                if (window.navigator.vibrate) {
+                    window.navigator.vibrate(10);
+                }
+            });
+        });
+
+        // Smooth interaction for items
+        document.querySelectorAll('.glass-item').forEach(item => {
+            item.addEventListener('touchstart', () => {
+                item.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+            });
+            item.addEventListener('touchend', () => {
+                item.style.backgroundColor = 'transparent';
+            });
+        });
+
+        function updateAlarmVolume(value, notifyAndroid) {
+            document.getElementById('alarm-volume-bar').style.width = value + '%';
+            document.getElementById('alarm-volume-thumb').style.left = 'calc(' + value + '% - 12px)';
+            document.getElementById('alarm-volume-slider').value = value;
+            if (notifyAndroid && window.AndroidBridge) {
+                window.AndroidBridge.setAlarmVolume(parseInt(value));
+            }
+        }
+
+        function updateTimerVolume(value, notifyAndroid) {
+            document.getElementById('timer-volume-bar').style.width = value + '%';
+            document.getElementById('timer-volume-thumb').style.left = 'calc(' + value + '% - 12px)';
+            document.getElementById('timer-volume-slider').value = value;
+            if (notifyAndroid && window.AndroidBridge) {
+                window.AndroidBridge.setTimerVolume(parseInt(value));
+            }
+        }
+
+        function updateVibrationIntensity(value, notifyAndroid) {
+            document.getElementById('vibration-intensity-bar').style.width = value + '%';
+            document.getElementById('vibration-intensity-thumb').style.left = 'calc(' + value + '% - 12px)';
+            document.getElementById('vibration-intensity-slider').value = value;
+            
+            let label = "Medium";
+            if (value < 34) label = "Low";
+            else if (value > 66) label = "High";
+            document.getElementById('vibration-intensity-text').innerText = label;
+
+            if (notifyAndroid && window.AndroidBridge) {
+                window.AndroidBridge.setVibrationIntensity(parseInt(value));
+            }
+        }
+
+        function initSettingsWithData(data) {
+            try {
+                if (data.alarmSoundName !== undefined) {
+                    document.getElementById('alarm-sound-name').innerText = data.alarmSoundName;
+                }
+                if (data.alarmVolume !== undefined) {
+                    updateAlarmVolume(data.alarmVolume, false);
+                }
+                if (data.snoozeDurationText !== undefined) {
+                    document.getElementById('snooze-duration-text').innerText = data.snoozeDurationText;
+                }
+                if (data.graduallyIncreaseVolume !== undefined) {
+                    document.getElementById('gradual-volume-toggle').checked = data.graduallyIncreaseVolume;
+                }
+                if (data.vibrateAlarms !== undefined) {
+                    document.getElementById('vibrate-alarms-toggle').checked = data.vibrateAlarms;
+                }
+                if (data.timerSoundName !== undefined) {
+                    document.getElementById('timer-sound-name').innerText = data.timerSoundName;
+                }
+                if (data.timerVolume !== undefined) {
+                    updateTimerVolume(data.timerVolume, false);
+                }
+                if (data.keepScreenOn !== undefined) {
+                    document.getElementById('keep-screen-on-toggle').checked = data.keepScreenOn;
+                }
+                if (data.vibrateTimer !== undefined) {
+                    document.getElementById('vibrate-timer-toggle').checked = data.vibrateTimer;
+                }
+                if (data.vibrationIntensity !== undefined) {
+                    updateVibrationIntensity(data.vibrationIntensity, false);
+                }
+                if (data.hapticFeedbackEnabled !== undefined) {
+                    document.getElementById('haptic-feedback-toggle').checked = data.hapticFeedbackEnabled;
+                }
+                if (data.timerHapticsEnabled !== undefined) {
+                    document.getElementById('timer-haptics-toggle').checked = data.timerHapticsEnabled;
+                }
+                if (data.alarmHapticsEnabled !== undefined) {
+                    document.getElementById('alarm-haptics-toggle').checked = data.alarmHapticsEnabled;
+                }
+                if (data.versionName !== undefined) {
+                    document.getElementById('app-version-text').innerText = data.versionName;
+                }
+            } catch (e) {
+                console.error("Error initializing settings with data", e);
+            }
+        }
+
+        function initSettings() {
+            if (!window.AndroidBridge) return;
+
+            try {
+                // Default Alarm Sound
+                const alarmSound = window.AndroidBridge.getAlarmSoundName();
+                document.getElementById('alarm-sound-name').innerText = alarmSound;
+
+                // Alarm Volume
+                const alarmVol = window.AndroidBridge.getAlarmVolume();
+                updateAlarmVolume(alarmVol, false);
+
+                // Snooze Duration
+                const snoozeDur = window.AndroidBridge.getSnoozeDurationText();
+                document.getElementById('snooze-duration-text').innerText = snoozeDur;
+
+                // Gradually Increase Volume
+                const gradualVol = window.AndroidBridge.getGraduallyIncreaseVolume();
+                document.getElementById('gradual-volume-toggle').checked = gradualVol;
+
+                // Vibrate (Alarms)
+                const vibrateAlarms = window.AndroidBridge.getVibrateAlarms();
+                document.getElementById('vibrate-alarms-toggle').checked = vibrateAlarms;
+
+                // Default Timer Sound
+                const timerSound = window.AndroidBridge.getTimerSoundName();
+                document.getElementById('timer-sound-name').innerText = timerSound;
+
+                // Timer Volume
+                const timerVol = window.AndroidBridge.getTimerVolume();
+                updateTimerVolume(timerVol, false);
+
+                // Keep Screen On During Timer
+                const keepScreenOn = window.AndroidBridge.getKeepScreenOn();
+                document.getElementById('keep-screen-on-toggle').checked = keepScreenOn;
+
+                // Vibrate When Timer Ends
+                const vibrateTimer = window.AndroidBridge.getVibrateTimer();
+                document.getElementById('vibrate-timer-toggle').checked = vibrateTimer;
+
+                // Vibration Intensity
+                const vibrationInt = window.AndroidBridge.getVibrationIntensity();
+                updateVibrationIntensity(vibrationInt, false);
+
+                // Haptic Feedback
+                const hapticFeedback = window.AndroidBridge.getHapticFeedbackEnabled();
+                document.getElementById('haptic-feedback-toggle').checked = hapticFeedback;
+
+                // Timer Haptics
+                const timerHaptics = window.AndroidBridge.getTimerHapticsEnabled();
+                document.getElementById('timer-haptics-toggle').checked = timerHaptics;
+
+                // Alarm Haptics
+                const alarmHaptics = window.AndroidBridge.getAlarmHapticsEnabled();
+                document.getElementById('alarm-haptics-toggle').checked = alarmHaptics;
+
+                // App Version
+                const version = window.AndroidBridge.getVersionName();
+                document.getElementById('app-version-text').innerText = version;
+            } catch (e) {
+                console.error("Error initializing settings from AndroidBridge", e);
+            }
+        }
+
+        // Call init on load
+        window.addEventListener('DOMContentLoaded', () => {
+            initSettings();
+        });
+
+        // Native callbacks
+        function setStatusBarHeight(heightPx) {
+            document.documentElement.style.setProperty('--status-bar-height', heightPx + 'px');
+        }
+
+        function setAlarmSoundName(name) {
+            document.getElementById('alarm-sound-name').innerText = name;
+        }
+
+        function setSnoozeDurationText(text) {
+            document.getElementById('snooze-duration-text').innerText = text;
+        }
+
+        function setTimerSoundName(name) {
+            document.getElementById('timer-sound-name').innerText = name;
+        }
+
+        function setSavedRingtonesCountText(text) {
+            document.getElementById('saved-ringtones-count').innerText = text;
+        }
+
+        function setClockStyleText(text) {
+            document.getElementById('clock-style-text').innerText = text;
+        }
+
+        function setFirstDayText(text) {
+            document.getElementById('first-day-text').innerText = text;
+        }
+    </script>
+</body></html>
