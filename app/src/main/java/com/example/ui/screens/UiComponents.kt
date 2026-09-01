@@ -844,8 +844,6 @@ fun LiquidGlassNavRail(
 
     Column(
         modifier = Modifier
-            .fillMaxHeight()
-            .padding(start = 12.dp, top = 24.dp, bottom = 24.dp)
             .width(80.dp)
             .glassCard(
                 shape = RoundedCornerShape(28.dp),

@@ -56,7 +56,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Text
@@ -192,6 +196,14 @@ class MainActivity : ComponentActivity() {
                             // Ambient blurred drift background underlay
                             AtmosphericLiquidBg()
 
+                            // Solid black status bar scrim behind system icons
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .windowInsetsTopHeight(WindowInsets.statusBars)
+                                    .background(Color.Black)
+                            )
+
                             // Active View matching current bottom nav tab selected with swipe-transition animation
                             Box(
                                 modifier = Modifier
@@ -232,13 +244,30 @@ class MainActivity : ComponentActivity() {
                                     exit = fadeOut(tween(200)) + slideOutHorizontally(animationSpec = tween(200)) { -it / 2 },
                                     modifier = Modifier.align(Alignment.CenterStart)
                                 ) {
-                                    com.example.ui.screens.LiquidGlassNavRail(
-                                        activeTab = currentTab,
-                                        onTabSelected = {
-                                            viewModel.selectTab(it)
-                                            viewModel.showSettings(false)
-                                        }
-                                    )
+                                    // ===== LANDSCAPE RAIL POSITION — EDIT THESE 4 VALUES =====
+                                    val railPosition = Alignment.CenterStart // Alignment.TopStart / Alignment.CenterStart / Alignment.BottomStart
+                                    val railStartMargin = 12.dp              // gap from left screen edge
+                                    val railTopMargin = 24.dp                // gap from top of screen
+                                    val railBottomMargin = 24.dp             // gap from bottom of screen
+
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxHeight()
+                                            .padding(
+                                                start = railStartMargin,
+                                                top = railTopMargin,
+                                                bottom = railBottomMargin
+                                            ),
+                                        contentAlignment = railPosition
+                                    ) {
+                                        com.example.ui.screens.LiquidGlassNavRail(
+                                            activeTab = currentTab,
+                                            onTabSelected = {
+                                                viewModel.selectTab(it)
+                                                viewModel.showSettings(false)
+                                            }
+                                        )
+                                    }
                                 }
                             } else {
                                 AnimatedVisibility(
