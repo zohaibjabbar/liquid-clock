@@ -832,58 +832,73 @@ fun LiquidGlassNavRail(
     activeTab: Int,
     onTabSelected: (Int) -> Unit
 ) {
+    val context = LocalContext.current
+    val haptic = LocalHapticFeedback.current
+
     val tabs = listOf(
-        Pair(androidx.compose.material.icons.Icons.Default.Public, "World"),
-        Pair(androidx.compose.material.icons.Icons.Default.Alarm, "Alarm"),
-        Pair(androidx.compose.material.icons.Icons.Default.Timer, "Stop"),
-        Pair(androidx.compose.material.icons.Icons.Default.HourglassEmpty, "Timer"),
+        Triple(Icons.Filled.Public,        Icons.Outlined.Public,        "WORLD"),
+        Triple(Icons.Filled.Alarm,         Icons.Outlined.Alarm,         "ALARMS"),
+        Triple(Icons.Filled.Timer,         Icons.Outlined.Timer,         "STOP"),
+        Triple(Icons.Filled.HourglassEmpty,Icons.Outlined.HourglassEmpty,"TIMERS"),
     )
 
-    androidx.compose.foundation.layout.Column(
-        modifier = androidx.compose.ui.Modifier
+    Column(
+        modifier = Modifier
             .fillMaxHeight()
             .padding(start = 12.dp, top = 24.dp, bottom = 24.dp)
+            .width(80.dp)
             .glassCard(
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(28.dp),
-                bgColor = com.example.ui.theme.GlassBgCard
+                shape = RoundedCornerShape(28.dp),
+                bgColor = GlassBg
             )
-            .padding(vertical = 16.dp, horizontal = 8.dp)
-            .width(72.dp),
-        verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp, androidx.compose.ui.Alignment.CenterVertically),
-        horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+            .padding(vertical = 16.dp, horizontal = 6.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        tabs.forEachIndexed { index, (icon, label) ->
+        tabs.forEachIndexed { index, (iconFilled, iconOutlined, label) ->
             val isActive = activeTab == index
-            androidx.compose.foundation.layout.Box(
-                modifier = androidx.compose.ui.Modifier
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
                     .then(
                         if (isActive)
-                            androidx.compose.ui.Modifier.glassPill(
-                                bgColor = com.example.ui.theme.PrimaryGreen.copy(alpha = 0.15f)
+                            Modifier.glassCard(
+                                shape = RoundedCornerShape(20.dp),
+                                bgColor = PrimaryGreen.copy(alpha = 0.12f)
                             )
                         else
-                            androidx.compose.ui.Modifier
+                            Modifier
                     )
-                    .clickable { onTabSelected(index) }
-                    .padding(horizontal = 10.dp, vertical = 10.dp),
-                contentAlignment = androidx.compose.ui.Alignment.Center
+                    .clip(RoundedCornerShape(20.dp))
+                    .clickable {
+                        HapticManager.light(context)
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        SoundHapticHelper.playSound269(context)
+                        onTabSelected(index)
+                    }
+                    .padding(vertical = 12.dp),
+                contentAlignment = Alignment.Center
             ) {
-                androidx.compose.foundation.layout.Column(
-                    horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    androidx.compose.material3.Icon(
-                        imageVector = icon,
+                    Icon(
+                        imageVector = if (isActive) iconFilled else iconOutlined,
                         contentDescription = label,
-                        tint = if (isActive) com.example.ui.theme.PrimaryGreen else com.example.ui.theme.OnSurfaceMuted,
-                        modifier = androidx.compose.ui.Modifier.size(22.dp)
+                        tint = if (isActive) PrimaryGreen else Color.White.copy(alpha = 0.45f),
+                        modifier = Modifier.size(22.dp)
                     )
                     if (isActive) {
-                        Spacer(modifier = androidx.compose.ui.Modifier.height(4.dp))
-                        androidx.compose.material3.Text(
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
                             text = label,
-                            fontSize = 10.sp,
-                            fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
-                            color = com.example.ui.theme.PrimaryGreen
+                            style = androidx.compose.ui.text.TextStyle(
+                                fontSize = 9.sp,
+                                fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
+                                color = PrimaryGreen
+                            ),
+                            maxLines = 1,
+                            softWrap = false
                         )
                     }
                 }

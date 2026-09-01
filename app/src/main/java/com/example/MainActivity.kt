@@ -196,7 +196,12 @@ class MainActivity : ComponentActivity() {
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .padding(bottom = innerPadding.calculateBottomPadding() / 4) // Tight safe padding bounds
+                                    .then(
+                                        if (isLandscape)
+                                            Modifier.padding(start = 104.dp) // rail width 80dp + 12dp margin + 12dp gap
+                                        else
+                                            Modifier.padding(bottom = innerPadding.calculateBottomPadding() / 4)
+                                    )
                             ) {
                                 AnimatedContent(
                                     targetState = currentTab,
