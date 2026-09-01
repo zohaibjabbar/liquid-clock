@@ -181,6 +181,9 @@ class MainActivity : ComponentActivity() {
                     val missingPermissions = permissions.filter { !it.isGranted }
                     val showPermissionDialog = missingPermissions.isNotEmpty()
 
+                    val configuration = androidx.compose.ui.platform.LocalConfiguration.current
+                    val isLandscape = configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+
                     Scaffold(
                         modifier = Modifier.fillMaxSize(),
                         containerColor = Color.Transparent // Allow underlay layout gradients to bleed in
@@ -214,17 +217,34 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
 
-                            // Shared global Bottom Glass Nav Bar
-                            AnimatedVisibility(
-                                visible = !isChooseCityVisible && !isShowingAlarmSetup && editingAlarm == null && ringingAlarm == null && !showPermissionDialog && !isShowingTimerSoundPicker,
-                                enter = fadeIn(tween(250)) + slideInVertically(animationSpec = tween(250)) { it / 2 },
-                                exit = fadeOut(tween(200)) + slideOutVertically(animationSpec = tween(200)) { it / 2 },
-                                modifier = Modifier.align(Alignment.BottomCenter)
-                            ) {
-                                if (!isShowingSettings) {
+                            // Shared global Nav — bottom bar in portrait, side rail in landscape
+                            val navVisible = !isChooseCityVisible && !isShowingAlarmSetup && editingAlarm == null && ringingAlarm == null && !showPermissionDialog && !isShowingTimerSoundPicker && !isShowingSettings
+
+                            if (isLandscape) {
+                                AnimatedVisibility(
+                                    visible = navVisible,
+                                    enter = fadeIn(tween(250)) + slideInHorizontally(animationSpec = tween(250)) { -it / 2 },
+                                    exit = fadeOut(tween(200)) + slideOutHorizontally(animationSpec = tween(200)) { -it / 2 },
+                                    modifier = Modifier.align(Alignment.CenterStart)
+                                ) {
+                                    com.example.ui.screens.LiquidGlassNavRail(
+                                        activeTab = currentTab,
+                                        onTabSelected = {
+                                            viewModel.selectTab(it)
+                                            viewModel.showSettings(false)
+                                        }
+                                    )
+                                }
+                            } else {
+                                AnimatedVisibility(
+                                    visible = navVisible,
+                                    enter = fadeIn(tween(250)) + slideInVertically(animationSpec = tween(250)) { it / 2 },
+                                    exit = fadeOut(tween(200)) + slideOutVertically(animationSpec = tween(200)) { it / 2 },
+                                    modifier = Modifier.align(Alignment.BottomCenter)
+                                ) {
                                     LiquidGlassBottomNav(
                                         activeTab = currentTab,
-                                        onTabSelected = { 
+                                        onTabSelected = {
                                             viewModel.selectTab(it)
                                             viewModel.showSettings(false)
                                         }

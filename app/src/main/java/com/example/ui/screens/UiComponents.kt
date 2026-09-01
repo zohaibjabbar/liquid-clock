@@ -82,6 +82,7 @@ import com.example.ui.theme.OnSurfaceMuted
 import com.example.ui.theme.PrimaryGreen
 import com.example.ui.theme.TrueBlack
 import com.example.ui.theme.glassCard
+import com.example.ui.theme.glassPill
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -821,6 +822,71 @@ fun LiquidSoundWaveformOverlay(
                     color = blobColor.copy(alpha = 0.25f * glowPulse),
                     style = Stroke(width = 1.5.dp.toPx())
                 )
+            }
+        }
+    }
+}
+
+@Composable
+fun LiquidGlassNavRail(
+    activeTab: Int,
+    onTabSelected: (Int) -> Unit
+) {
+    val tabs = listOf(
+        Pair(androidx.compose.material.icons.Icons.Default.Public, "World"),
+        Pair(androidx.compose.material.icons.Icons.Default.Alarm, "Alarm"),
+        Pair(androidx.compose.material.icons.Icons.Default.Timer, "Stop"),
+        Pair(androidx.compose.material.icons.Icons.Default.HourglassEmpty, "Timer"),
+    )
+
+    androidx.compose.foundation.layout.Column(
+        modifier = androidx.compose.ui.Modifier
+            .fillMaxHeight()
+            .padding(start = 12.dp, top = 24.dp, bottom = 24.dp)
+            .glassCard(
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(28.dp),
+                bgColor = com.example.ui.theme.GlassBgCard
+            )
+            .padding(vertical = 16.dp, horizontal = 8.dp)
+            .width(72.dp),
+        verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp, androidx.compose.ui.Alignment.CenterVertically),
+        horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+    ) {
+        tabs.forEachIndexed { index, (icon, label) ->
+            val isActive = activeTab == index
+            androidx.compose.foundation.layout.Box(
+                modifier = androidx.compose.ui.Modifier
+                    .then(
+                        if (isActive)
+                            androidx.compose.ui.Modifier.glassPill(
+                                bgColor = com.example.ui.theme.PrimaryGreen.copy(alpha = 0.15f)
+                            )
+                        else
+                            androidx.compose.ui.Modifier
+                    )
+                    .clickable { onTabSelected(index) }
+                    .padding(horizontal = 10.dp, vertical = 10.dp),
+                contentAlignment = androidx.compose.ui.Alignment.Center
+            ) {
+                androidx.compose.foundation.layout.Column(
+                    horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+                ) {
+                    androidx.compose.material3.Icon(
+                        imageVector = icon,
+                        contentDescription = label,
+                        tint = if (isActive) com.example.ui.theme.PrimaryGreen else com.example.ui.theme.OnSurfaceMuted,
+                        modifier = androidx.compose.ui.Modifier.size(22.dp)
+                    )
+                    if (isActive) {
+                        Spacer(modifier = androidx.compose.ui.Modifier.height(4.dp))
+                        androidx.compose.material3.Text(
+                            text = label,
+                            fontSize = 10.sp,
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
+                            color = com.example.ui.theme.PrimaryGreen
+                        )
+                    }
+                }
             }
         }
     }
