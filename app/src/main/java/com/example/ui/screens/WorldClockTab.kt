@@ -125,12 +125,18 @@ fun WorldClockTab(viewModel: ClockViewModel) {
             label = "world_clock_blur"
         )
 
+        val configuration = androidx.compose.ui.platform.LocalConfiguration.current
+        val isLandscape = configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .blur(blurRadius)
                 .padding(horizontal = 16.dp)
-                .padding(top = 56.dp, bottom = 100.dp)
+                .padding(
+                    top = if (isLandscape) 8.dp else 56.dp,
+                    bottom = if (isLandscape) 8.dp else 100.dp
+                )
         ) {
             // Header Group (Matches title and '+' exact placement from screenshots)
             Row(

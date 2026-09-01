@@ -86,7 +86,7 @@ fun StopwatchTab(viewModel: ClockViewModel) {
                 .padding(horizontal = 16.dp)
                 .padding(
                     top = if (isLandscape) 8.dp else 56.dp,
-                    bottom = if (isLandscape) 8.dp else 100.dp
+                    bottom = if (isLandscape) 16.dp else 100.dp
                 )
         ) {
         // App header (Stopwatch, triple dot context button menu)

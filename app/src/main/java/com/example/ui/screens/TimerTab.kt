@@ -94,11 +94,17 @@ fun TimerTab(viewModel: ClockViewModel) {
 
     val presets = listOf(1, 3, 5, 10, 15, 30)
 
+    val configuration = androidx.compose.ui.platform.LocalConfiguration.current
+    val isLandscape = configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp)
-            .padding(top = 56.dp, bottom = 100.dp)
+            .padding(
+                top = if (isLandscape) 8.dp else 56.dp,
+                bottom = if (isLandscape) 8.dp else 100.dp
+            )
     ) {
         // App header (Clock title, gear settings icon button top right)
         Row(

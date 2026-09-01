@@ -169,13 +169,19 @@ fun AlarmTab(viewModel: ClockViewModel) {
             label = "alarm_screen_blur"
         )
 
+        val configuration = androidx.compose.ui.platform.LocalConfiguration.current
+        val isLandscape = configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+
         // Main Listings View
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .blur(blurRadius)
                 .padding(horizontal = 16.dp)
-                .padding(top = 56.dp, bottom = 100.dp)
+                .padding(
+                    top = if (isLandscape) 8.dp else 56.dp,
+                    bottom = if (isLandscape) 8.dp else 100.dp
+                )
         ) {
             // Header Group (Exact layout parameters)
             Row(
