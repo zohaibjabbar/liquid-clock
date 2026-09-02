@@ -16,3 +16,18 @@ gradle/wrapper/gradle-wrapper.jar
 # Crash logs
 hs_err_pid*.log
 replay_pid*.log
+
+# Gradle caches (should never be committed)
+.gradle/
+
+# Secrets and signing
+.env
+.env.example
+*.jks
+*.keystore
+
+# Screenshot test outputs
+app/src/test/screenshots/
+
+# OS files
+Thumbs.db
