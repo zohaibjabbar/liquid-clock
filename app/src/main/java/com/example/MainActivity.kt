@@ -245,20 +245,15 @@ class MainActivity : ComponentActivity() {
                                     modifier = Modifier.align(Alignment.CenterStart)
                                 ) {
                                     // ===== LANDSCAPE RAIL POSITION — EDIT THESE 4 VALUES =====
-                                    val railPosition = Alignment.CenterStart // Alignment.TopStart / Alignment.CenterStart / Alignment.BottomStart
-                                    val railStartMargin = 12.dp              // gap from left screen edge
-                                    val railTopMargin = 24.dp                // gap from top of screen
-                                    val railBottomMargin = 24.dp             // gap from bottom of screen
-
                                     Box(
                                         modifier = Modifier
                                             .fillMaxHeight()
                                             .padding(
-                                                start = railStartMargin,
-                                                top = railTopMargin,
-                                                bottom = railBottomMargin
+                                                start = 12.dp,
+                                                top = 32.dp,
+                                                bottom = 8.dp
                                             ),
-                                        contentAlignment = railPosition
+                                        contentAlignment = Alignment.TopStart
                                     ) {
                                         com.example.ui.screens.LiquidGlassNavRail(
                                             activeTab = currentTab,
