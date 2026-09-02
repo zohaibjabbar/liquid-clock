@@ -435,8 +435,10 @@ class ClockViewModel(application: Application) : AndroidViewModel(application) {
             val notificationManager = context.getSystemService(android.content.Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
             notificationManager.cancel(alarm.id.toInt())
             
+            val snoozePrefs = getApplication<Application>().getSharedPreferences("clock_settings", android.content.Context.MODE_PRIVATE)
+            val snoozeMin = snoozePrefs.getInt("snooze_duration_minutes", 9)
             val calendar = Calendar.getInstance().apply {
-                add(Calendar.MINUTE, 5)
+                add(Calendar.MINUTE, snoozeMin)
             }
             
             var hour12 = calendar.get(Calendar.HOUR)

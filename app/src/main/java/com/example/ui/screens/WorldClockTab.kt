@@ -959,11 +959,11 @@ private fun getDayAndOffset(timezoneId: String, offsetText: String): String {
     val localCalendar = Calendar.getInstance()
     val targetCalendar = Calendar.getInstance(TimeZone.getTimeZone(timezoneId))
 
-    val localDay = localCalendar.get(Calendar.DAY_OF_YEAR)
-    val targetDay = targetCalendar.get(Calendar.DAY_OF_YEAR)
+    val localEpochDay = localCalendar.get(Calendar.YEAR) * 366L + localCalendar.get(Calendar.DAY_OF_YEAR)
+    val targetEpochDay = targetCalendar.get(Calendar.YEAR) * 366L + targetCalendar.get(Calendar.DAY_OF_YEAR)
     val relativeDay = when {
-        targetDay > localDay -> "Tomorrow"
-        targetDay < localDay -> "Yesterday"
+        targetEpochDay > localEpochDay -> "Tomorrow"
+        targetEpochDay < localEpochDay -> "Yesterday"
         else -> "Today"
     }
     return "$relativeDay, $offsetText"

@@ -227,12 +227,7 @@ fun TimerTab(viewModel: ClockViewModel) {
                     }
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.alpha(0.6f).clickable {
-                            HapticManager.heavy(context.applicationContext)
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            SoundHapticHelper.playSound269(context)
-                            viewModel.resetTimer()
-                        }
+                        modifier = Modifier.alpha(0.3f)
                     ) {
                         Box(modifier = Modifier.size(40.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.05f)).border(1.dp, Color.White.copy(alpha = 0.08f), CircleShape), contentAlignment = Alignment.Center) {
                             Icon(imageVector = Icons.Default.PlaylistAdd, contentDescription = null, tint = OnSurfaceLight, modifier = Modifier.size(18.dp))
@@ -354,9 +349,7 @@ fun TimerTab(viewModel: ClockViewModel) {
                             Text(text = "Reset", color = Color.White.copy(alpha = 0.6f), fontSize = 11.sp, textAlign = TextAlign.Center)
                         }
                     }
-                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.alpha(0.6f).clickable {
-                        HapticManager.heavy(context.applicationContext); haptic.performHapticFeedback(HapticFeedbackType.LongPress); SoundHapticHelper.playSound269(context); viewModel.resetTimer()
-                    }.padding(horizontal = 24.dp)) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.alpha(0.3f).padding(horizontal = 24.dp)) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             Box(modifier = Modifier.size(44.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.05f)).border(1.dp, Color.White.copy(alpha = 0.08f), CircleShape), contentAlignment = Alignment.Center) {
                                 Icon(imageVector = Icons.Default.PlaylistAdd, contentDescription = "NewTimer", tint = OnSurfaceLight, modifier = Modifier.size(20.dp))

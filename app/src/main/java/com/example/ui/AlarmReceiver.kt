@@ -54,7 +54,11 @@ class AlarmReceiver : BroadcastReceiver() {
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
+                } finally {
+                    if (wakeLock.isHeld) wakeLock.release()
                 }
+            } else {
+                if (wakeLock.isHeld) wakeLock.release()
             }
         }
     }

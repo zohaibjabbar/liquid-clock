@@ -678,15 +678,11 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun isServiceRunning(context: Context, serviceClass: Class<*>): Boolean {
-        val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as? android.app.ActivityManager
-        @Suppress("DEPRECATION")
-        val runningServices = manager?.getRunningServices(Integer.MAX_VALUE)
-        if (runningServices != null) {
-            for (service in runningServices) {
-                if (serviceClass.name == service.service.className) {
-                    return true
-                }
-            }
+        // getRunningServices() is deprecated and unreliable on Android 8+.
+        // We use the SharedPreferences flag written by TimerService as the source of truth.
+        if (serviceClass == com.example.ui.TimerService::class.java) {
+            val prefs = context.getSharedPreferences("timer_prefs", Context.MODE_PRIVATE)
+            return prefs.getBoolean("timer_is_running", false)
         }
         return false
     }
