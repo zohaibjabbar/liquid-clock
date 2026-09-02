@@ -373,7 +373,7 @@ fun SettingsScreen(viewModel: ClockViewModel) {
             }
             SettingsDivider()
             SettingsRowChevron("Privacy Policy", "") {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com/privacy"))
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://zohaibjabbar.github.io/liquid-clock-privacy/"))
                 context.startActivity(intent)
             }
         }
