@@ -10,7 +10,7 @@
 [![Android SDK](https://img.shields.io/badge/Min%20SDK-24-3DDC84?logo=android&logoColor=white)](https://developer.android.com/about/versions/nougat)
 [![Target SDK](https://img.shields.io/badge/Target%20SDK-36-3DDC84?logo=android&logoColor=white)](https://developer.android.com/about/versions/16)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
+[![Download APK](https://img.shields.io/badge/Download-APK-brightgreen?style=for-the-badge&logo=android)](https://github.com/zohaibjabbar/liquid-clock/releases/latest)
 
 
 </div>
