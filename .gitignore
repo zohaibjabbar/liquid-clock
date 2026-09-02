@@ -20,6 +20,9 @@ replay_pid*.log
 # Gradle caches (should never be committed)
 .gradle/
 
+# Kotlin daemon logs
+.kotlin/
+
 # Secrets and signing
 .env
 .env.example
