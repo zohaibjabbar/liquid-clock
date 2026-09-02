@@ -97,359 +97,272 @@ fun TimerTab(viewModel: ClockViewModel) {
     val configuration = androidx.compose.ui.platform.LocalConfiguration.current
     val isLandscape = configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-            .padding(
-                top = if (isLandscape) 8.dp else 56.dp,
-                bottom = if (isLandscape) 8.dp else 100.dp
-            )
-    ) {
-        // App header (Clock title, gear settings icon button top right)
+    val isTimerActive = isRunning || remainingMs < totalMs && remainingMs > 0
+    val buttonText = if (isRunning) "PAUSE" else "START"
+
+    if (isLandscape) {
+        // LANDSCAPE: left = timer/presets/sound, right = start button
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+                .fillMaxSize()
+                .padding(top = 8.dp, bottom = 8.dp, start = 8.dp, end = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "Clock",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = OnSurfaceLight,
-                letterSpacing = (-0.5).sp
-            )
-
-            // Dynamic setup settings top right
-            GlassIconBtn(
-                icon = Icons.Default.Settings,
-                onClick = {
-                    viewModel.showSettings(true)
-                },
-                tint = OnSurfaceLight
-            )
-        }
-
-        val isTimerActive = isRunning || remainingMs < totalMs && remainingMs > 0
-
-        AnimatedContent(
-            targetState = isTimerActive,
-            transitionSpec = {
-                (fadeIn(animationSpec = tween(400)) + scaleIn(animationSpec = tween(400), initialScale = 0.95f))
-                    .togetherWith(fadeOut(animationSpec = tween(300)) + scaleOut(animationSpec = tween(300), targetScale = 0.95f))
-            },
-            label = "timer_view_switcher",
-            modifier = Modifier.weight(1f)
-        ) { active ->
-            if (active) {
-                // Live countdown view (if running)
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+            // Left column
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "TIMER RUNNING",
-                        style = LabelCaps,
-                        color = OnSurfaceMuted,
-                        fontSize = 11.sp,
-                        letterSpacing = 2.sp,
-                        modifier = Modifier.padding(bottom = 6.dp)
-                    )
+                    Text(text = "Clock", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = OnSurfaceLight, letterSpacing = (-0.5).sp)
+                    GlassIconBtn(icon = Icons.Default.Settings, onClick = { viewModel.showSettings(true) }, tint = OnSurfaceLight)
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                if (isTimerActive) {
+                    Text(text = "TIMER RUNNING", style = LabelCaps, color = OnSurfaceMuted, fontSize = 11.sp, letterSpacing = 2.sp)
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = formatRemainingTime(remainingMs),
-                        style = DisplayTimer.copy(
-                            fontSize = 44.sp,
-                            fontWeight = FontWeight.Light,
-                            fontFamily = FontFamily.Monospace,
-                            letterSpacing = (-0.5).sp
-                        ),
+                        style = DisplayTimer.copy(fontSize = 40.sp, fontWeight = FontWeight.Light, fontFamily = FontFamily.Monospace, letterSpacing = (-0.5).sp),
                         color = LiquidOrange
                     )
+                } else {
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        ColumnCard(label = "HRS", value = hrs, onIncrement = { viewModel.setTimerHrs(hrs + 1) }, onDecrement = { viewModel.setTimerHrs(hrs - 1) })
+                        ColumnCard(label = "MIN", value = min, onIncrement = { viewModel.setTimerMin(min + 1) }, onDecrement = { viewModel.setTimerMin(min - 1) }, showDotOverlay = true)
+                        ColumnCard(label = "SEC", value = sec, onIncrement = { viewModel.setTimerSec(sec + 1) }, onDecrement = { viewModel.setTimerSec(sec - 1) })
+                    }
                 }
-            } else {
-                // Traditional Column selections (Hours / Minutes / Seconds grid Cards)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = "QUICK PRESETS", color = OnSurfaceMuted.copy(alpha = 0.6f), style = LabelCaps, fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
+                Spacer(modifier = Modifier.height(6.dp))
+                LazyRow(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(presets) { presetMin ->
+                        val isActive = presetMin == activePresetVal
+                        val bgAlpha by animateFloatAsState(targetValue = if (isActive) 0.2f else 0.05f, animationSpec = tween(250), label = "preset_bg_alpha")
+                        val bg = if (isActive) LiquidOrange.copy(alpha = bgAlpha) else Color.White.copy(alpha = bgAlpha)
+                        val tint by animateColorAsState(targetValue = if (isActive) LiquidOrange else OnSurfaceLight, animationSpec = tween(250), label = "preset_tint")
+                        Box(
+                            modifier = Modifier.height(32.dp).glassPill(bgColor = bg)
+                                .clickable {
+                                    HapticManager.light(context.applicationContext)
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    SoundHapticHelper.playSound269(context)
+                                    viewModel.selectPreset(presetMin)
+                                }.padding(horizontal = 14.dp),
+                            contentAlignment = Alignment.Center
+                        ) { Text(text = "$presetMin Min", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = tint) }
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 24.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    modifier = Modifier.fillMaxWidth().glassCard(shape = RoundedCornerShape(12.dp))
+                        .clickable {
+                            HapticManager.light(context.applicationContext)
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            SoundHapticHelper.playSound269(context)
+                            viewModel.showTimerSoundPicker(true)
+                        }.padding(horizontal = 16.dp, vertical = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // HRS COLUMNCARD
-                    ColumnCard(
-                        label = "HRS",
-                        value = hrs,
-                        onIncrement = { viewModel.setTimerHrs(hrs + 1) },
-                        onDecrement = { viewModel.setTimerHrs(hrs - 1) }
-                    )
-
-                    // MIN COLUMNCARD
-                    ColumnCard(
-                        label = "MIN",
-                        value = min,
-                        onIncrement = { viewModel.setTimerMin(min + 1) },
-                        onDecrement = { viewModel.setTimerMin(min - 1) },
-                        showDotOverlay = true
-                    )
-
-                    // SEC COLUMNCARD
-                    ColumnCard(
-                        label = "SEC",
-                        value = sec,
-                        onIncrement = { viewModel.setTimerSec(sec + 1) },
-                        onDecrement = { viewModel.setTimerSec(sec - 1) }
-                    )
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(imageVector = Icons.Default.NotificationsActive, contentDescription = null, tint = OnSurfaceMuted, modifier = Modifier.size(18.dp))
+                        Text(text = "Timer Sound", style = BodySm, color = OnSurfaceLight)
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
+                        val rawName = selectedTimerSound
+                        val display = when { rawName.length > 20 -> rawName.take(17) + "..."; rawName.contains("content://") -> "Custom Sound"; else -> rawName }
+                        Text(text = display, style = BodySm, color = LiquidOrange)
+                        Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null, tint = OnSurfaceMuted, modifier = Modifier.size(16.dp))
+                    }
                 }
             }
-        }
 
-        // QUICK PRESETS SECTION
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Text(
-                text = "QUICK PRESETS",
-                color = OnSurfaceMuted.copy(alpha = 0.6f),
-                style = LabelCaps,
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 1.sp,
-                modifier = Modifier.padding(start = 2.dp)
-            )
-
-            // Presets Chips horizontal row
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            // Right column: START + sub-actions
+            Column(
+                modifier = Modifier.width(160.dp).fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                items(presets) { presetMin ->
-                    val isActive = presetMin == activePresetVal
-                    val bgAlpha by animateFloatAsState(
-                        targetValue = if (isActive) 0.2f else 0.05f,
-                        animationSpec = tween(250),
-                        label = "preset_bg_alpha"
-                    )
-                    val bg = if (isActive) LiquidOrange.copy(alpha = bgAlpha) else Color.White.copy(alpha = bgAlpha)
-                    val tint by animateColorAsState(
-                        targetValue = if (isActive) LiquidOrange else OnSurfaceLight,
-                        animationSpec = tween(250),
-                        label = "preset_tint"
-                    )
-
-                    Box(
-                        modifier = Modifier
-                            .height(36.dp)
-                            .glassPill(bgColor = bg)
-                            .clickable {
-                                HapticManager.light(context.applicationContext)
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                SoundHapticHelper.playSound269(context)
-                                viewModel.selectPreset(presetMin)
-                            }
-                            .padding(horizontal = 16.dp),
-                        contentAlignment = Alignment.Center
+                Box(
+                    modifier = Modifier.size(100.dp).clip(CircleShape).glassCard(shape = CircleShape)
+                        .border(2.dp, LiquidOrange.copy(alpha = 0.4f), CircleShape)
+                        .clickable {
+                            HapticManager.medium(context.applicationContext)
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            SoundHapticHelper.playSound3124(context)
+                            viewModel.startTimer()
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        if (!isRunning) Icon(imageVector = Icons.Default.PlayArrow, contentDescription = null, tint = LiquidOrange, modifier = Modifier.size(28.dp))
+                        Text(text = buttonText, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = LiquidOrange, letterSpacing = 1.sp)
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.alpha(0.6f).clickable {
+                            HapticManager.heavy(context.applicationContext)
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            SoundHapticHelper.playSound269(context)
+                            viewModel.resetTimer()
+                        }
                     ) {
-                        Text(
-                            text = "$presetMin Min",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = tint
-                        )
+                        Box(modifier = Modifier.size(40.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.05f)).border(1.dp, Color.White.copy(alpha = 0.08f), CircleShape), contentAlignment = Alignment.Center) {
+                            Icon(imageVector = Icons.Default.RestartAlt, contentDescription = null, tint = OnSurfaceLight, modifier = Modifier.size(18.dp))
+                        }
+                        Text(text = "Reset", color = Color.White.copy(alpha = 0.6f), fontSize = 10.sp, textAlign = TextAlign.Center)
+                    }
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.alpha(0.6f).clickable {
+                            HapticManager.heavy(context.applicationContext)
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            SoundHapticHelper.playSound269(context)
+                            viewModel.resetTimer()
+                        }
+                    ) {
+                        Box(modifier = Modifier.size(40.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.05f)).border(1.dp, Color.White.copy(alpha = 0.08f), CircleShape), contentAlignment = Alignment.Center) {
+                            Icon(imageVector = Icons.Default.PlaylistAdd, contentDescription = null, tint = OnSurfaceLight, modifier = Modifier.size(18.dp))
+                        }
+                        Text(text = "Add Timer", color = Color.White.copy(alpha = 0.6f), fontSize = 10.sp, textAlign = TextAlign.Center)
                     }
                 }
             }
         }
-
-        // TIMER SOUND SELECTOR ROW
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
-                .glassCard(shape = RoundedCornerShape(12.dp))
-                .clickable {
-                    HapticManager.light(context.applicationContext)
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    SoundHapticHelper.playSound269(context)
-                    viewModel.showTimerSoundPicker(true)
-                }
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.NotificationsActive,
-                    contentDescription = null,
-                    tint = OnSurfaceMuted,
-                    modifier = Modifier.size(18.dp)
-                )
-                Text(text = "Timer Sound", style = BodySm, color = OnSurfaceLight)
-            }
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                val rawName = selectedTimerSound
-                val timerSoundDisplay = when {
-                    rawName.length > 25 -> rawName.take(22) + "..."
-                    rawName.contains("content://") -> "Custom Sound"
-                    rawName.any { it == '-' } && rawName.length > 20 -> "Custom Sound"
-                    else -> rawName
-                }
-                Text(text = timerSoundDisplay, style = BodySm, color = LiquidOrange)
-                Icon(
-                    imageVector = Icons.Default.ChevronRight,
-                    contentDescription = null,
-                    tint = OnSurfaceMuted,
-                    modifier = Modifier.size(16.dp)
-                )
-            }
-        }
-
-        // Circular START Button & auxiliary sub-actions (New, Reset)
+    } else {
+        // PORTRAIT: unchanged
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .padding(top = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+                .padding(top = 56.dp, bottom = 100.dp)
         ) {
-            val buttonText = if (isRunning) "PAUSE" else "START"
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = "Clock", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = OnSurfaceLight, letterSpacing = (-0.5).sp)
+                GlassIconBtn(icon = Icons.Default.Settings, onClick = { viewModel.showSettings(true) }, tint = OnSurfaceLight)
+            }
 
-            // Central Ring Button
-            Box(
-                modifier = Modifier
-                    .size(116.dp)
-                    .clip(CircleShape)
-                    .glassCard(shape = CircleShape)
-                    .border(2.dp, LiquidOrange.copy(alpha = 0.4f), CircleShape)
+            AnimatedContent(
+                targetState = isTimerActive,
+                transitionSpec = {
+                    (fadeIn(animationSpec = tween(400)) + scaleIn(animationSpec = tween(400), initialScale = 0.95f))
+                        .togetherWith(fadeOut(animationSpec = tween(300)) + scaleOut(animationSpec = tween(300), targetScale = 0.95f))
+                },
+                label = "timer_view_switcher",
+                modifier = Modifier.weight(1f)
+            ) { active ->
+                if (active) {
+                    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                        Text(text = "TIMER RUNNING", style = LabelCaps, color = OnSurfaceMuted, fontSize = 11.sp, letterSpacing = 2.sp, modifier = Modifier.padding(bottom = 6.dp))
+                        Text(text = formatRemainingTime(remainingMs), style = DisplayTimer.copy(fontSize = 44.sp, fontWeight = FontWeight.Light, fontFamily = FontFamily.Monospace, letterSpacing = (-0.5).sp), color = LiquidOrange)
+                    }
+                } else {
+                    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        ColumnCard(label = "HRS", value = hrs, onIncrement = { viewModel.setTimerHrs(hrs + 1) }, onDecrement = { viewModel.setTimerHrs(hrs - 1) })
+                        ColumnCard(label = "MIN", value = min, onIncrement = { viewModel.setTimerMin(min + 1) }, onDecrement = { viewModel.setTimerMin(min - 1) }, showDotOverlay = true)
+                        ColumnCard(label = "SEC", value = sec, onIncrement = { viewModel.setTimerSec(sec + 1) }, onDecrement = { viewModel.setTimerSec(sec - 1) })
+                    }
+                }
+            }
+
+            Column(modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(text = "QUICK PRESETS", color = OnSurfaceMuted.copy(alpha = 0.6f), style = LabelCaps, fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp, modifier = Modifier.padding(start = 2.dp))
+                LazyRow(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    items(presets) { presetMin ->
+                        val isActive = presetMin == activePresetVal
+                        val bgAlpha by animateFloatAsState(targetValue = if (isActive) 0.2f else 0.05f, animationSpec = tween(250), label = "preset_bg_alpha")
+                        val bg = if (isActive) LiquidOrange.copy(alpha = bgAlpha) else Color.White.copy(alpha = bgAlpha)
+                        val tint by animateColorAsState(targetValue = if (isActive) LiquidOrange else OnSurfaceLight, animationSpec = tween(250), label = "preset_tint")
+                        Box(modifier = Modifier.height(36.dp).glassPill(bgColor = bg).clickable {
+                            HapticManager.light(context.applicationContext)
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            SoundHapticHelper.playSound269(context)
+                            viewModel.selectPreset(presetMin)
+                        }.padding(horizontal = 16.dp), contentAlignment = Alignment.Center) {
+                            Text(text = "$presetMin Min", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = tint)
+                        }
+                    }
+                }
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp).glassCard(shape = RoundedCornerShape(12.dp))
                     .clickable {
-                        HapticManager.medium(context.applicationContext)
+                        HapticManager.light(context.applicationContext)
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        SoundHapticHelper.playSound3124(context)
-                        viewModel.startTimer()
-                    },
-                contentAlignment = Alignment.Center
+                        SoundHapticHelper.playSound269(context)
+                        viewModel.showTimerSoundPicker(true)
+                    }.padding(horizontal = 16.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    if (!isRunning) {
-                        Icon(
-                            imageVector = Icons.Default.PlayArrow,
-                            contentDescription = null,
-                            tint = LiquidOrange,
-                            modifier = Modifier.size(32.dp)
-                        )
-                    }
-                    Text(
-                        text = buttonText,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = LiquidOrange,
-                        letterSpacing = 1.sp
-                    )
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Icon(imageVector = Icons.Default.NotificationsActive, contentDescription = null, tint = OnSurfaceMuted, modifier = Modifier.size(18.dp))
+                    Text(text = "Timer Sound", style = BodySm, color = OnSurfaceLight)
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
+                    val rawName = selectedTimerSound
+                    val timerSoundDisplay = when { rawName.length > 25 -> rawName.take(22) + "..."; rawName.contains("content://") -> "Custom Sound"; rawName.any { it == '-' } && rawName.length > 20 -> "Custom Sound"; else -> rawName }
+                    Text(text = timerSoundDisplay, style = BodySm, color = LiquidOrange)
+                    Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null, tint = OnSurfaceMuted, modifier = Modifier.size(16.dp))
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Sub control links (Reset, New Buttons exactly from Screenshot 7)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                // RESET LINK CONTROLLER
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .alpha(0.6f)
+            Column(modifier = Modifier.fillMaxWidth().weight(1f).padding(top = 24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                Box(
+                    modifier = Modifier.size(116.dp).clip(CircleShape).glassCard(shape = CircleShape)
+                        .border(2.dp, LiquidOrange.copy(alpha = 0.4f), CircleShape)
                         .clickable {
-                            android.util.Log.d("HAPTIC_TEST", "triggered")
-                            HapticManager.heavy(context.applicationContext)
+                            HapticManager.medium(context.applicationContext)
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            SoundHapticHelper.playSound269(context)
-                            viewModel.resetTimer()
-                        }
-                        .padding(horizontal = 24.dp)
+                            SoundHapticHelper.playSound3124(context)
+                            viewModel.startTimer()
+                        },
+                    contentAlignment = Alignment.Center
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(44.dp)
-                                .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.05f))
-                                .border(1.dp, Color.White.copy(alpha = 0.08f), CircleShape),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.RestartAlt,
-                                contentDescription = "ResetTimer",
-                                tint = OnSurfaceLight,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                        Text(
-                            text = "Reset",
-                            color = Color.White.copy(alpha = 0.6f),
-                            fontSize = 11.sp,
-                            textAlign = TextAlign.Center
-                        )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                        if (!isRunning) Icon(imageVector = Icons.Default.PlayArrow, contentDescription = null, tint = LiquidOrange, modifier = Modifier.size(32.dp))
+                        Text(text = buttonText, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = LiquidOrange, letterSpacing = 1.sp)
                     }
                 }
-
-                // NEW CONTROLLER
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .alpha(0.6f)
-                        .clickable {
-                            android.util.Log.d("HAPTIC_TEST", "triggered")
-                            HapticManager.heavy(context.applicationContext)
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            SoundHapticHelper.playSound269(context)
-                            viewModel.resetTimer()
+                Spacer(modifier = Modifier.height(24.dp))
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.alpha(0.6f).clickable {
+                        HapticManager.heavy(context.applicationContext); haptic.performHapticFeedback(HapticFeedbackType.LongPress); SoundHapticHelper.playSound269(context); viewModel.resetTimer()
+                    }.padding(horizontal = 24.dp)) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Box(modifier = Modifier.size(44.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.05f)).border(1.dp, Color.White.copy(alpha = 0.08f), CircleShape), contentAlignment = Alignment.Center) {
+                                Icon(imageVector = Icons.Default.RestartAlt, contentDescription = "ResetTimer", tint = OnSurfaceLight, modifier = Modifier.size(20.dp))
+                            }
+                            Text(text = "Reset", color = Color.White.copy(alpha = 0.6f), fontSize = 11.sp, textAlign = TextAlign.Center)
                         }
-                        .padding(horizontal = 24.dp)
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(44.dp)
-                                .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.05f))
-                                .border(1.dp, Color.White.copy(alpha = 0.08f), CircleShape),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.PlaylistAdd,
-                                contentDescription = "NewTimer",
-                                tint = OnSurfaceLight,
-                                modifier = Modifier.size(20.dp)
-                            )
+                    }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.alpha(0.6f).clickable {
+                        HapticManager.heavy(context.applicationContext); haptic.performHapticFeedback(HapticFeedbackType.LongPress); SoundHapticHelper.playSound269(context); viewModel.resetTimer()
+                    }.padding(horizontal = 24.dp)) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Box(modifier = Modifier.size(44.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.05f)).border(1.dp, Color.White.copy(alpha = 0.08f), CircleShape), contentAlignment = Alignment.Center) {
+                                Icon(imageVector = Icons.Default.PlaylistAdd, contentDescription = "NewTimer", tint = OnSurfaceLight, modifier = Modifier.size(20.dp))
+                            }
+                            Text(text = "Add Timer", color = Color.White.copy(alpha = 0.6f), fontSize = 11.sp, textAlign = TextAlign.Center)
                         }
-                        Text(
-                            text = "Add Timer",
-                            color = Color.White.copy(alpha = 0.6f),
-                            fontSize = 11.sp,
-                            textAlign = TextAlign.Center
-                        )
                     }
                 }
             }

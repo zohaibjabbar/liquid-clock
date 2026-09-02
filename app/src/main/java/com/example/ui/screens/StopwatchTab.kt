@@ -80,111 +80,9 @@ fun StopwatchTab(viewModel: ClockViewModel) {
             modifier = Modifier.fillMaxSize()
         )
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
-                .padding(
-                    top = if (isLandscape) 8.dp else 56.dp,
-                    bottom = if (isLandscape) 16.dp else 100.dp
-                )
-        ) {
-        // App header (Stopwatch, triple dot context button menu)
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 12.dp),
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Stopwatch",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = OnSurfaceLight,
-                letterSpacing = (-0.5).sp
-            )
-        }
-
-        // Digital display panel (Matches 00:17.26 big spacing on top third axis)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = if (isLandscape) 8.dp else 48.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = formatStopwatchTime(totalTimeMs),
-                style = DisplayTimerMobile.copy(
-                    fontSize = if (isLandscape) 48.sp else 72.sp,
-                    fontWeight = FontWeight.Light,
-                    fontFamily = FontFamily.Monospace,
-                    letterSpacing = (-2).sp
-                ),
-                color = OnSurfaceLight,
-                textAlign = TextAlign.Center
-            )
-        }
-
-        // Physical concentric circular badges (Start/Stop, Reset/Lap controls)
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Reset / Lap Circle Button (Secondary neutral background)
+        if (isLandscape) {
+            // LANDSCAPE: 3-column layout — [empty nav space] | [time + laps] | [buttons]
             val resetText = if (isRunning) "Lap" else "Reset"
-            val buttonSize = if (isLandscape) 56.dp else 80.dp
-            Box(
-                modifier = Modifier
-                    .size(buttonSize)
-                    .clip(CircleShape)
-                    .clickable {
-                        android.util.Log.d("HAPTIC_TEST", "triggered")
-                        if (isRunning) {
-                            HapticManager.medium(context.applicationContext)
-                        } else {
-                            HapticManager.heavy(context.applicationContext)
-                        }
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        SoundHapticHelper.playSound269(context)
-                        if (isRunning) {
-                            viewModel.lapStopwatch()
-                        } else {
-                            viewModel.resetStopwatch()
-                        }
-                    }
-                    .background(Color.White.copy(alpha = 0.08f))
-                    .glassCard(shape = CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = resetText,
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = OnSurfaceLight
-                )
-            }
-
-            // Swipable navigation dots (Exactly matching visual markers from Stopwatch mockup)
-            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                Box(
-                    modifier = Modifier
-                        .size(6.dp)
-                        .clip(CircleShape)
-                        .background(OnSurfaceLight)
-                )
-                Box(
-                    modifier = Modifier
-                        .size(6.dp)
-                        .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.15f))
-                )
-            }
-
-            // Start / Stop Circle Button (Primary high chroma green/red state toggling)
             val startText = if (isRunning) "Stop" else "Start"
             val textCol by animateColorAsState(
                 targetValue = if (isRunning) SecondaryRed else PrimaryGreen,
@@ -198,79 +96,220 @@ fun StopwatchTab(viewModel: ClockViewModel) {
             )
             val btnBgColor = if (isRunning) SecondaryRed.copy(alpha = btnBgAlpha) else PrimaryGreen.copy(alpha = btnBgAlpha)
 
-            Box(
+            Row(
                 modifier = Modifier
-                    .size(buttonSize)
-                    .clip(CircleShape)
-                    .clickable {
-                        android.util.Log.d("HAPTIC_TEST", "triggered")
-                        HapticManager.medium(context.applicationContext)
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        SoundHapticHelper.playSound3124(context)
-                        viewModel.startStopwatch()
-                    }
-                    .background(Color.White.copy(alpha = 0.04f))
-                    .background(btnBgColor)
-                    .glassCard(shape = CircleShape),
-                contentAlignment = Alignment.Center
+                    .fillMaxSize()
+                    .padding(top = 8.dp, bottom = 8.dp, start = 8.dp, end = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = startText,
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = textCol
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // History Laps Scroll Layout (Fastest Green, Slowest Red indicators)
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            itemsIndexed(
-                items = laps,
-                key = { index, _ -> laps.size - index }
-            ) { idx, lapTime ->
-                val displayLapIndex = laps.size - idx
-                val rowColor = when (idx) {
-                    fastestLapIdx -> PrimaryGreen
-                    slowestLapIdx -> SecondaryRed
-                    else -> OnSurfaceLight
+                // Column 1: time display + laps
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxSize()
+                        .padding(horizontal = 8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Stopwatch",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = OnSurfaceLight,
+                        letterSpacing = (-0.5).sp
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = formatStopwatchTime(totalTimeMs),
+                        style = DisplayTimerMobile.copy(
+                            fontSize = 44.sp,
+                            fontWeight = FontWeight.Light,
+                            fontFamily = FontFamily.Monospace,
+                            letterSpacing = (-2).sp
+                        ),
+                        color = OnSurfaceLight,
+                        textAlign = TextAlign.Center
+                    )
+                    if (laps.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f, fill = false),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            itemsIndexed(
+                                items = laps,
+                                key = { index, _ -> laps.size - index }
+                            ) { idx, lapTime ->
+                                val displayLapIndex = laps.size - idx
+                                val rowColor = when (idx) {
+                                    fastestLapIdx -> PrimaryGreen
+                                    slowestLapIdx -> SecondaryRed
+                                    else -> OnSurfaceLight
+                                }
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(36.dp)
+                                        .animateItem()
+                                        .glassCard(shape = RoundedCornerShape(10.dp))
+                                        .padding(horizontal = 12.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(text = "Lap $displayLapIndex", style = BodyLg, color = rowColor, fontWeight = FontWeight.Medium)
+                                    Text(text = formatLapTime(lapTime), style = BodyLg.copy(fontFamily = FontFamily.Monospace), color = rowColor, fontWeight = FontWeight.Medium)
+                                }
+                            }
+                        }
+                    }
                 }
 
-                Row(
+                // Column 2: Reset + Start buttons stacked vertically
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp)
-                        .animateItem()
-                        .glassCard(shape = RoundedCornerShape(12.dp))
-                        .padding(horizontal = 16.dp),
+                        .width(120.dp)
+                        .fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    // Reset / Lap button
+                    Box(
+                        modifier = Modifier
+                            .size(72.dp)
+                            .clip(CircleShape)
+                            .clickable {
+                                if (isRunning) HapticManager.medium(context.applicationContext)
+                                else HapticManager.heavy(context.applicationContext)
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                SoundHapticHelper.playSound269(context)
+                                if (isRunning) viewModel.lapStopwatch() else viewModel.resetStopwatch()
+                            }
+                            .background(Color.White.copy(alpha = 0.08f))
+                            .glassCard(shape = CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = resetText, fontSize = 15.sp, fontWeight = FontWeight.Medium, color = OnSurfaceLight)
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    // Start / Stop button
+                    Box(
+                        modifier = Modifier
+                            .size(72.dp)
+                            .clip(CircleShape)
+                            .clickable {
+                                HapticManager.medium(context.applicationContext)
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                SoundHapticHelper.playSound3124(context)
+                                viewModel.startStopwatch()
+                            }
+                            .background(Color.White.copy(alpha = 0.04f))
+                            .background(btnBgColor)
+                            .glassCard(shape = CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = startText, fontSize = 15.sp, fontWeight = FontWeight.Medium, color = textCol)
+                    }
+                }
+            }
+        } else {
+            // PORTRAIT: original layout unchanged
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 56.dp, bottom = 100.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "Stopwatch", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = OnSurfaceLight, letterSpacing = (-0.5).sp)
+                }
+
+                Box(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 48.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = formatStopwatchTime(totalTimeMs),
+                        style = DisplayTimerMobile.copy(fontSize = 72.sp, fontWeight = FontWeight.Light, fontFamily = FontFamily.Monospace, letterSpacing = (-2).sp),
+                        color = OnSurfaceLight,
+                        textAlign = TextAlign.Center
+                    )
+                }
+
+                val resetText = if (isRunning) "Lap" else "Reset"
+                val startText = if (isRunning) "Stop" else "Start"
+                val textCol by animateColorAsState(targetValue = if (isRunning) SecondaryRed else PrimaryGreen, animationSpec = tween(350), label = "stopwatch_btn_text_color")
+                val btnBgAlpha by animateFloatAsState(targetValue = if (isRunning) 0.16f else 0.08f, animationSpec = tween(350), label = "stopwatch_btn_bg_alpha")
+                val btnBgColor = if (isRunning) SecondaryRed.copy(alpha = btnBgAlpha) else PrimaryGreen.copy(alpha = btnBgAlpha)
+
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "Lap $displayLapIndex",
-                        style = BodyLg,
-                        color = rowColor,
-                        fontWeight = FontWeight.Medium
-                    )
+                    Box(
+                        modifier = Modifier.size(80.dp).clip(CircleShape)
+                            .clickable {
+                                if (isRunning) HapticManager.medium(context.applicationContext) else HapticManager.heavy(context.applicationContext)
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                SoundHapticHelper.playSound269(context)
+                                if (isRunning) viewModel.lapStopwatch() else viewModel.resetStopwatch()
+                            }
+                            .background(Color.White.copy(alpha = 0.08f)).glassCard(shape = CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) { Text(text = resetText, fontSize = 17.sp, fontWeight = FontWeight.Medium, color = OnSurfaceLight) }
 
-                    Text(
-                        text = formatLapTime(lapTime),
-                        style = BodyLg.copy(fontFamily = FontFamily.Monospace),
-                        color = rowColor,
-                        fontWeight = FontWeight.Medium
-                    )
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(OnSurfaceLight))
+                        Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.15f)))
+                    }
+
+                    Box(
+                        modifier = Modifier.size(80.dp).clip(CircleShape)
+                            .clickable {
+                                HapticManager.medium(context.applicationContext)
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                SoundHapticHelper.playSound3124(context)
+                                viewModel.startStopwatch()
+                            }
+                            .background(Color.White.copy(alpha = 0.04f)).background(btnBgColor).glassCard(shape = CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) { Text(text = startText, fontSize = 17.sp, fontWeight = FontWeight.Medium, color = textCol) }
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth().weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    itemsIndexed(items = laps, key = { index, _ -> laps.size - index }) { idx, lapTime ->
+                        val displayLapIndex = laps.size - idx
+                        val rowColor = when (idx) {
+                            fastestLapIdx -> PrimaryGreen
+                            slowestLapIdx -> SecondaryRed
+                            else -> OnSurfaceLight
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth().height(52.dp).animateItem().glassCard(shape = RoundedCornerShape(12.dp)).padding(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = "Lap $displayLapIndex", style = BodyLg, color = rowColor, fontWeight = FontWeight.Medium)
+                            Text(text = formatLapTime(lapTime), style = BodyLg.copy(fontFamily = FontFamily.Monospace), color = rowColor, fontWeight = FontWeight.Medium)
+                        }
+                    }
                 }
             }
         }
     }
-}
 }
 
 @Composable
